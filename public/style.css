@@ -1,0 +1,217 @@
+/* style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#header {
+    width: 70%;
+    padding: 20px;
+}
+
+#header h1 {
+    margin: 0;
+}
+
+#app-container {
+    display: flex;
+    width: 80%;
+    height: 80vh;
+}
+
+#chat-container {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px; 
+    margin-right: 10%;
+}
+
+#conversation {
+    width: 100%;
+    height: 70vh;
+    border: 1px solid #ddd;
+    padding: 20px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+#input-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+}
+
+#send-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    outline: none;
+}
+
+#document-container {
+    width:45%;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    height: 70vh;
+}
+
+#document-container p {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+#download-button {
+    position: flex;
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    outline: none;
+}
+
+#conversation::after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    width: 70%;
+    float: right;
+    clear: both;
+}
+
+.bot-message {
+    background-color: #eee;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    width: 70%;
+    float: left;
+    clear: both;
+}
+
+h1 {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    font-size: 1.75em;
+    color: #666;
+    margin-bottom: 0.5em;
+}
+
+h3 {
+    font-size: 1.5em;
+    color: #999;
+    margin-bottom: 0.5em;
+}
+
+h4 {
+    font-size: 1.25em;
+    color: #ccc;
+    margin-bottom: 0.5em;
+}
+
+h5 {
+    font-size: 1em;
+    color: #ccc;
+    margin-bottom: 0.5em;
+}
+
+h6 {
+    font-size: 0.875em;
+    color: #ccc;
+    margin-bottom: 0.5em;
+}
+
+.bot-message {
+    display: inline-block;
+}
+
+.typing-dots {
+    display: inline-block;
+    margin-left: 5px;
+    color: transparent;
+    text-shadow: 0 0 0 black;
+}
+
+.typing-dots::before,
+.typing-dots::after {
+    content: '...';
+    display: block;
+    animation: typing 1s steps(5, end) infinite;
+}
+
+.typing-dots::before {
+    animation-delay: 0.2s;
+}
+
+.typing-dots::after {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 20%, 100% {
+        color: transparent;
+        text-shadow: .25em 0 0 black, .5em 0 0 black;
+    }
+    40% {
+        color: black;
+        text-shadow: .25em 0 0 black, .5em 0 0 black;
+    }
+    60% {
+        text-shadow: .25em 0 0 transparent, .5em 0 0 black;
+    }
+    80%, 90% {
+        text-shadow: .25em 0 0 transparent, .5em 0 0 transparent;
+    }
+}
+
+#restart-button {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
