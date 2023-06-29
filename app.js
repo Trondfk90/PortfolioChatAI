@@ -23,17 +23,17 @@ app.use(session({
   secret: process.env.SESSION_SECRET || secret,
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // set to true if your app is on https
+  cookie: { secure: false } // set to true if app is on https
 }));
 
 const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY || app.settings.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || app.settings.OPENAI_API_KEY,
 });
 
-app.use(express.json()); 
+app.use(express.json());
 app.use(express.static('public'));
 
-// Load documents 
+// Load documents
 let docs;
 const loader = new DirectoryLoader("./documents", {
   ".json": (path) => new JSONLoader(path, "/texts"),
@@ -57,36 +57,36 @@ loader.load().then((documents) => {
   app.post('/chat', async (req, res) => {
     const userInput = req.body.text;
 
-    // Initialize the current question index, conversation history, and summary presented flag if they're undefined
-    if (req.session.currentQuestionIndex === undefined) {
-      req.session.currentQuestionIndex = 0;
-      req.session.conversation = [
-        "Du er en hyggelig og imøtekommende ChatBot som hjelper ansatte til Vestland fylkeskommune også kallet vlfk. Informer om at du er en PorteføljeBot som hjelper med å utforme og samle inn informasjon til idéer som som kan bli prosjekt",
-        questions[req.session.currentQuestionIndex].question
-      ];
-      req.session.summaryPresented = false;
-    }
-
-    // Get the current question and rule
-    const currentQuestion = questions[req.session.currentQuestionIndex];
-    if (!currentQuestion) {
-      res.status(400).json({ error: 'No more questions.' });
-      return;
-    }
-
-    // Add the current question, rule, and user input to the conversation history
-    req.session.conversation.push(
-      currentQuestion.question,
-      currentQuestion.rule,
-      userInput
-    );
-
-    // Generate chatbot response
     try {
-      const response = await chat.call({ 
-        input: req.session.conversation.join('\n') + '\n' + currentQuestion.question 
-      });
+      // Initialize the current question index, conversation history, and summary presented flag if they're undefined
+      if (req.session.currentQuestionIndex === undefined) {
+        console.log('A new session has been created.');
 
+        req.session.currentQuestionIndex = 0;
+        req.session.conversation = [
+          "Hei! Jeg er PorteføljeBot, laget av Vestland fylkeskommune. Jeg er her for å hjelpe deg med å utforme og samle inn informasjon om ideer som kan bli til prosjekter. Hvordan kan jeg assistere deg i dag?"
+        ];
+        req.session.summaryPresented = false;
+      }
+
+      // Get the current question and rule
+      const currentQuestion = questions[req.session.currentQuestionIndex];
+      if (!currentQuestion) {
+        res.status(400).json({ error: 'No more questions.' });
+        return;
+      }
+
+      // Add the current question, rule, and user input to the conversation history
+      req.session.conversation.push(
+        currentQuestion.question,
+        currentQuestion.rule,
+        userInput
+      );
+
+      // Generate chatbot response
+      const response = await chat.call({
+        input: req.session.conversation.join('\n') + '\n' + currentQuestion.question
+      });
 
       // Extract the bot's reply
       const botReply = response.response;
@@ -94,7 +94,7 @@ loader.load().then((documents) => {
       // If there are no more questions, generate a summary
       if (req.session.currentQuestionIndex >= questions.length - 1) {
         const summary = await chat.call({
-          input:[
+          input: [
             ...req.session.conversation,
             "Generate a summary of the conversation."
           ].join('\n')
@@ -123,16 +123,16 @@ loader.load().then((documents) => {
         // Add the bot's reply and the next question to the conversation history
         req.session.conversation.push(botReply, nextQuestion);
 
-        // Send the bot's response and the next question
-        res.json({ text: botReply + ' ' + nextQuestion });
-
         // Increment the current question index
         req.session.currentQuestionIndex++;
+
+        // Send the bot's response and the next question
+        res.json({ text: botReply + ' ' + nextQuestion });
       }
     } catch (error) {
       console.error(error);
       console.error(error.message);
-      res.status(500).json({error: 'An error occurred while generating a response.' });
+      res.status(500).json({ error: 'An error occurred while generating a response.' });
     }
   });
 
@@ -146,13 +146,29 @@ loader.load().then((documents) => {
       }
     });
   });
-  
+
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
   });
-  
-  }).catch((error) => {
-    console.error('Error loading documents:', error);
-  });
-  
+
+}).catch((error) => {
+  console.error('Error loading documents:', error);
+});
+
+// Route for regenerating the response
+app.post('/regenerate', async (req, res) => {
+  try {
+    const response = await chat.call({ 
+      input: req.session.conversation.join('\n')
+    });
+
+    const botReply = response.response;
+
+    res.json({ text: botReply });
+  } catch (error) {
+    console.error(error);
+    console.error(error.message);
+    res.status(500).json({ error: 'An error occurred while regenerating the response.' });
+  }
+});

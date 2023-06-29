@@ -2,7 +2,7 @@ const conversationDiv = document.getElementById('conversation');
 const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
 
-// sendMessage function
+/// sendMessage function
 function sendMessage() {
     const text = userInput.value;
     userInput.value = '';
@@ -19,6 +19,10 @@ function sendMessage() {
 
     // Append the "typing" element to the conversation
     conversationDiv.appendChild(typing);
+
+    // Disable the input field and the send button
+    userInput.disabled = false;
+    sendButton.disabled = true;
 
     fetch('/chat', {
         method: 'POST',
@@ -38,20 +42,28 @@ function sendMessage() {
         // Remove the "typing" element from the conversation
         conversationDiv.removeChild(typing);
 
-        // Update the document only if the response contains the professional summary
-        if (data.text.includes('Takk for at du svarte på alle spørsmålene.')) {
-            const documentContainer = document.getElementById('document-container');
-            const paragraph = document.createElement('p');
-            paragraph.textContent = data.text;
-            documentContainer.appendChild(paragraph);
+        // Re-enable the input field and the send button
+        userInput.disabled = false;
+        sendButton.disabled = false;
+
+        // If this is the user's first message, send the first question
+        if (conversationDiv.getElementsByClassName('user-message').length === 1) {
+            sendMessage(questions[0].question);
         }
     }).catch(error => {
         console.error('Error:', error);
 
         // Remove the "typing" element from the conversation in case of error
         conversationDiv.removeChild(typing);
+
+        // Re-enable the input field and the send button, even in case of error
+        userInput.disabled = false;
+        sendButton.disabled = false;
     });
 }
+
+
+
 
 
 // Event listener for the send button
@@ -117,3 +129,12 @@ document.getElementById('download-button').addEventListener('click', function() 
     html2pdf().set(opt).from(element).save();
 });
 
+function sendWelcomeMessage() {
+    const welcomeMessage = document.createElement('div');
+    welcomeMessage.className = 'bot-message';
+    welcomeMessage.textContent = `PorteføljeBot: Hei! Jeg er PorteføljeBot. Jeg er her for å hjelpe deg med å utforme og samle inn informasjon om ideer som kan bli til prosjekter. Beggyn med og fotelle meg om idèen din.`;
+    conversationDiv.appendChild(welcomeMessage);
+}
+
+
+window.onload = sendWelcomeMessage;
