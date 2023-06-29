@@ -2,10 +2,14 @@ const conversationDiv = document.getElementById('conversation');
 const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
 
+let lastUserInput = '';
+
 /// sendMessage function
 function sendMessage() {
     const text = userInput.value;
     userInput.value = '';
+
+    lastUserInput = text;
 
     const userMessage = document.createElement('div');
     userMessage.className = 'user-message';
@@ -21,7 +25,7 @@ function sendMessage() {
     conversationDiv.appendChild(typing);
 
     // Disable the input field and the send button
-    userInput.disabled = false;
+    userInput.disabled = true;
     sendButton.disabled = true;
 
     fetch('/chat', {
@@ -33,37 +37,42 @@ function sendMessage() {
     }).then(response => response.json()).then(data => {
         const botMessage = document.createElement('div');
         botMessage.className = 'bot-message';
-        botMessage.textContent = `PorteføljeBot: ${data.text}`;
+    
+        // Check if the bot's response contains the document
+        if (data.text.includes('Saksframlegg')) {
+            // If it does, display it in a different way
+            botMessage.innerHTML = `PorteføljeBot: <pre>${data.text}</pre>`;
+        } else {
+            botMessage.textContent = `PorteføljeBot: ${data.text}`;
+        }
+    
         conversationDiv.appendChild(botMessage);
-
+    
         // Scroll the chat window to the bottom
         conversationDiv.scrollTop = conversationDiv.scrollHeight;
-
+    
         // Remove the "typing" element from the conversation
         conversationDiv.removeChild(typing);
-
+    
         // Re-enable the input field and the send button
         userInput.disabled = false;
         sendButton.disabled = false;
-
-        // If this is the user's first message, send the first question
-        if (conversationDiv.getElementsByClassName('user-message').length === 1) {
-            sendMessage(questions[0].question);
-        }
+    
     }).catch(error => {
         console.error('Error:', error);
-
+    
         // Remove the "typing" element from the conversation in case of error
-        conversationDiv.removeChild(typing);
-
+            if (conversationDiv.contains(typing)) {
+                conversationDiv.removeChild(typing);
+            }
+  
+    
         // Re-enable the input field and the send button, even in case of error
         userInput.disabled = false;
         sendButton.disabled = false;
     });
+    
 }
-
-
-
 
 
 // Event listener for the send button
@@ -83,6 +92,7 @@ const restartButton = document.getElementById('restart-button');
 restartButton.addEventListener('click', restartConversation);
 
 function restartConversation() {
+
     // Clear the conversation div
     conversationDiv.innerHTML = '';
 
@@ -136,5 +146,44 @@ function sendWelcomeMessage() {
     conversationDiv.appendChild(welcomeMessage);
 }
 
+// Event listener for the regenerate button
+document.getElementById('regenerate-button').addEventListener('click', function() {
+    // Remove the last bot message
+    const botMessages = document.getElementsByClassName('bot-message');
+    if (botMessages.length > 0) {
+        const lastBotMessage = botMessages[botMessages.length - 1];
+        conversationDiv.removeChild(lastBotMessage);
+    }
+
+    // Add a "typing" message
+    const typing = document.createElement('div');
+    typing.id = 'typing';
+    typing.innerHTML = '<span class="bot-message">PorteføljeBot skriver et svar</span><span class="typing-dots">...</span>';
+    conversationDiv.appendChild(typing);
+
+    fetch('/regenerate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: lastUserInput })
+    }).then(response => response.json()).then(data => {
+        // Remove the "typing" message
+        if (conversationDiv.contains(typing)) {
+            conversationDiv.removeChild(typing);
+        }
+
+        // Update the chat interface with the new bot response
+        const botMessage = document.createElement('div');
+        botMessage.className = 'bot-message';
+        botMessage.textContent = `PorteføljeBot: ${data.text}`;
+        conversationDiv.appendChild(botMessage);
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+});
+
 
 window.onload = sendWelcomeMessage;
+
+

@@ -3,6 +3,8 @@
 <head>
     <title>PorteføljeBot</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 </head>
 <body>
     <div id="header"><h1>Hei! jeg er PorteføljeBot</h1></div>
@@ -10,7 +12,9 @@
     <div id="app-container">
 
         <div id="chat-container">
-            <div id="conversation"></div>
+            <div id="conversation">
+                <button id="regenerate-button">&#x21BB; Regenerer det siste svaret</button>
+            </div>
             <div id="input-container">
                 <input id="user-input" type="text" placeholder="Send en melding til porteføljeboten">
                 <button id="send-button">Send</button>

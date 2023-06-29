@@ -46,6 +46,7 @@ body {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    position: relative;
 }
 
 #input-container {
@@ -170,48 +171,61 @@ h6 {
 }
 
 .typing-dots {
-    display: inline-block;
-    margin-left: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 0.2em;
     color: transparent;
     text-shadow: 0 0 0 black;
-}
-
-.typing-dots::before,
-.typing-dots::after {
-    content: '...';
-    display: block;
     animation: typing 1s steps(5, end) infinite;
 }
-
-.typing-dots::before {
-    animation-delay: 0.2s;
-}
-
-.typing-dots::after {
-    animation-delay: 0.4s;
-}
-
-@keyframes typing {
+  
+  .bot-message {
+    position: relative;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    width: 70%;
+    float: left;
+    clear: both;
+  }
+  
+  @keyframes typing {
     0%, 20%, 100% {
-        color: transparent;
-        text-shadow: .25em 0 0 black, .5em 0 0 black;
+      color: transparent;
+      text-shadow: .25em 0 0 black, .5em 0 0 black;
     }
     40% {
-        color: black;
-        text-shadow: .25em 0 0 black, .5em 0 0 black;
+      color: black;
+      text-shadow: .25em 0 0 black, .5em 0 0 black;
     }
     60% {
-        text-shadow: .25em 0 0 transparent, .5em 0 0 black;
+      text-shadow: .25em 0 0 transparent, .5em 0 0 black;
     }
     80%, 90% {
-        text-shadow: .25em 0 0 transparent, .5em 0 0 transparent;
+      text-shadow: .25em 0 0 transparent, .5em 0 0 transparent;
     }
-}
-
+  }
+  
 #restart-button {
     background-color: transparent;
     border: none;
     font-size: 20px;
     cursor: pointer;
+}
+
+#regenerate-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    outline: none;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 

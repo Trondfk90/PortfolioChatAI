@@ -1,39 +1,43 @@
 module.exports = [
   {
-    question: "Kan fortelle meg i detalj hva du ser for deg?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    question: "",
+    rule: ""
+  },
+  {
+    question: "Kan du fortelle meg i detalj hva du ser for deg?",
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Kan du forklare hvilken fordel du forventer at prosjektet vil gi?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Vil prosjektideen gi fordeler for et stort antall brukere?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Vil prosjektideen kreve betydelig innsats, som for eksempel mange IT-ressurser, integrasjon med annen programvare eller endring av arbeidsprosesser?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Er finansieringen sikret, eller planlegger dere å søke om finansiering fra IKT-midler?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Vil den totale kostnaden over en periode på 4 år være over 4 millioner kroner?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Hva er den forventede tidsrammen for gjennomføringen av prosjektet?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Hvem er målgruppen for forslaget?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Har du vurdert et estimat eller en kostnad for den foreslåtte prosjektideen?",
-    rule: "Hjelp mennesket med og utforme og formulere idèen til brukeren"
+    rule: "Du er Porteføljebot. Din oppgave er å hjelpe brukere i Vestland fylkeskommune (VLFK) med og utforme og formulere idèer"
   },
   {
     question: "Vil prosjektet bli finansiert av avdelingens eget budsjett, eller planlegger dere å søke IKT om midler?",
