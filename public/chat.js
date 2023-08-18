@@ -18,16 +18,19 @@ function sendMessage() {
 
     // Create the "typing" element
     const typing = document.createElement('div');
-    typing.id = 'typing';
-    typing.innerHTML = '<span class="bot-message">PorteføljeBot skriver et svar</span><span class="typing-dots">...</span>';
+    typing.className = 'bot-message';
+    typing.innerHTML = '<span class="typing-wrapper"><span class="typing-text">PorteføljeBot skriver et svar</span><span class="typing-dots">...</span></span>';
 
     // Append the "typing" element to the conversation
     conversationDiv.appendChild(typing);
+
+
 
     // Disable the input field and the send button
     userInput.disabled = true;
     sendButton.disabled = true;
 
+    // Send the message to the server
     fetch('/chat', {
         method: 'POST',
         headers: {
@@ -38,12 +41,28 @@ function sendMessage() {
         const botMessage = document.createElement('div');
         botMessage.className = 'bot-message';
     
-        // Check if the bot's response contains the document
-        if (data.text.includes('Saksframlegg')) {
-            // If it does, display it in a different way
-            botMessage.innerHTML = `PorteføljeBot: <pre>${data.text}</pre>`;
+        // Check if all questions have been answered
+        if (data.text === 'No more questions.') {
+            // If all questions have been answered, make a POST request to the '/generate-summary' route
+            fetch('/generate-summary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json()).then(summaryData => {
+                // Display the summary in a different way
+                botMessage.innerHTML = `PorteføljeBot: <pre>${summaryData.text}</pre>`;
+            }).catch(error => {
+                console.error('Error:', error);
+            });
         } else {
-            botMessage.textContent = `PorteføljeBot: ${data.text}`;
+            // If not all questions have been answered, continue the conversation as usual
+            if (data.text.includes('Saksframlegg')) {
+                // If the bot's response contains the document, display it in a different way
+                botMessage.innerHTML = `PorteføljeBot: <pre>${data.text}</pre>`;
+            } else {
+                botMessage.textContent = `PorteføljeBot: ${data.text}`;
+            }
         }
     
         conversationDiv.appendChild(botMessage);
@@ -62,16 +81,14 @@ function sendMessage() {
         console.error('Error:', error);
     
         // Remove the "typing" element from the conversation in case of error
-            if (conversationDiv.contains(typing)) {
-                conversationDiv.removeChild(typing);
-            }
-  
+        if (conversationDiv.contains(typing)) {
+            conversationDiv.removeChild(typing);
+        }
     
         // Re-enable the input field and the send button, even in case of error
         userInput.disabled = false;
         sendButton.disabled = false;
     });
-    
 }
 
 

@@ -68,6 +68,7 @@ loader.load().then((documents) => {
       ];      
       req.session.summaryPresented = false;
   }
+  
 // Get the current question and rule
 const currentQuestion = questions[req.session.currentQuestionIndex];
 if (!currentQuestion) {
@@ -90,73 +91,66 @@ while (req.session.conversation.length > MAX_HISTORY_LENGTH) {
   req.session.conversation.shift();
 }
 
-// Generate chatbot response
-try {
-  let input = req.session.conversation.join('\n');
-  if (!input.includes(currentQuestion.question)) {
-    input += '\n' + currentQuestion.question;
-  }
-
-  const response = await chat.call({ input });
-
-  // Extract the bot's reply
-  let botReply = response.response;
-
-  // If there are no more questions, generate a summary
-  if (req.session.currentQuestionIndex >= questions.length - 1) {
-    // Generate the summary only once, when all questions have been answered
-    if (!req.session.summaryPresented) {
-      const nextQuestion = questions[req.session.currentQuestionIndex + 1]?.question;
-
-      // Add the bot's reply and the next question to the conversation history
-      req.session.conversation.push(botReply, nextQuestion);
-
-      // Check if this is the first time the summary is being presented
-      if (!req.session.summaryPresented) {
-        // Mark the summary as presented
-        req.session.summaryPresented = true;
-
-        // Generate the document
-        const document = `Saksframlegg\n\nKort oppsummering:\n(TBD)\n\nKonklusjon:\n(TBD)\n\nSaksvurdering:\n${req.session.conversation.join('\n')}\n\nVirksomhetsstrategi som støtter forslaget:\n(TBD)`;
-
-        // Generate the summary by making the API call
-        const summary = await chat.call({
-          input: [
-            ...req.session.conversation,
-            'Generate a summary of the conversation.'
-          ].join('\n')
-        });
-
-        const summaryReply = summary.response;
-
-        // Update the document with the actual summary
-        const updatedDocument = document.replace('(TBD)', summaryReply);
-
-        // Send the bot's response, the next question, and the updated document to the user
-        res.json({ text: botReply + ' ' + nextQuestion + '\n\n' + updatedDocument + '\n\nDette er oppsummeringen av svarene dine. Vil du legge til eller fjerne noe?' });
-        return; // Return after sending the response to avoid further execution
-      }
+  // Generate chatbot response
+  try {
+    let input = req.session.conversation.join('\n');
+    if (!input.includes(currentQuestion.question)) {
+      input += '\n' + currentQuestion.question;
     }
+
+    const response = await chat.call({ input });
+
+    // Extract the bot's reply
+    let botReply = response.response;
+
+    // Get the next question
+    const nextQuestion = questions[req.session.currentQuestionIndex + 1]?.question;
+
+    // Add the bot's reply and the next question to the conversation history
+    req.session.conversation.push(botReply, nextQuestion);
+
+    // Increment the current question index
+    req.session.currentQuestionIndex++;
+
+    // Send the bot's response and the next question to the user
+    res.json({ text: botReply + ' ' + nextQuestion });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'An error occurred while generating a response.' });
   }
+});
 
-  // Get the next question
-  const nextQuestion = questions[req.session.currentQuestionIndex + 1]?.question;
+// Generate summary
+app.post('/generate-summary', async (req, res) => {
+  // Check if all questions have been answered
+  if (req.session.currentQuestionIndex >= questions.length) {
+    // Generate the document
+    const document = `Saksframlegg\n\nKort oppsummering:\n(TBD)\n\nKonklusjon:\n(TBD)\n\nSaksvurdering:\n${req.session.conversation.join('\n')}\n\nVirksomhetsstrategi som støtter forslaget:\n(TBD)`;
 
-  // Add the bot's reply and the next question to the conversation history
-  req.session.conversation.push(botReply, nextQuestion);
+    try {
+      // Generate the summary by making the API call
+      const summary = await chat.call({
+        input: [
+          ...req.session.conversation,
+          'Generate a summary of the conversation.'
+        ].join('\n')
+      });
 
-  // Increment the current question index
-  req.session.currentQuestionIndex++;
+      const summaryReply = summary.response;
 
-  // Send the bot's response and the next question to the user
-  res.json({ text: botReply + ' ' + nextQuestion });
-} catch (error) {
-  console.error(error);
-  console.error(error.message);
-  res.status(500).json({ error: 'An error occurred while generating a response.' });
-}
+      // Update the document with the actual summary
+      const updatedDocument = document.replace('(TBD)', summaryReply);
 
-  });
+      // Send the updated document to the user
+      res.json({ text: updatedDocument + '\n\nDette er oppsummeringen av svarene dine. Vil du legge til eller fjerne noe?' });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Failed to generate the summary.' });
+    }
+  } else {
+    res.status(400).json({ error: 'All questions have not been answered yet.' });
+  }
+});
 
     //Regenerate response
     app.post('/regenerate', async (req, res) => {
